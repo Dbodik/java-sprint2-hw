@@ -1,43 +1,25 @@
-import java.util.HashMap;
-import java.util.List;
+
 import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        MonthlyReport monthlyReport = new MonthlyReport();
-        YearlyReport yearlyReport = new YearlyReport();
-        HashMap<String, List<String>> mReport = null;
-        HashMap<String, List<String>> yReport = null;
+        FilesManager filesManager = new FilesManager();
         while (true) {
             printMenu();
             Scanner scanner = new Scanner(System.in);
             int command = scanner.nextInt();
             if (command == 1) {
-            mReport = monthlyReport.readMonthlyReport(3);
-                System.out.println(mReport);
+                filesManager.command1();
+                System.out.println("Месячный отчет считан");
             } else if (command == 2) {
-                yReport = yearlyReport.readYearlyReport(2021);
-                System.out.println(yReport);
+                filesManager.command2();
+                System.out.println("Годовой отчет считан");
             } else if (command == 3) {
-                System.out.println(yReport);
-                if(mReport!= null&& yReport!=null){
-                    HashMap<String, List<Integer>> sumPerMonth = new HashMap<>();
-                    for (int i = 1; i<4; i++){
-                        String month = Integer.toString(i);
-                        String monthNumber = "0"+month;
-                        sumPerMonth.put(monthNumber, monthlyReport.monthSum(mReport,monthNumber));
-                    }
-                    System.out.println(sumPerMonth);
-                        monthlyReport.monthVsYearReport(yReport, sumPerMonth);
-                }
+                filesManager.command3();
             } else if (command == 4) {
-                if(mReport!= null) {
-                    monthlyReport.reportPerMonth(mReport);
-                }
+                filesManager.command4();
             } else if (command == 5) {
-                if (yReport!=null){
-                    yearlyReport.reportPerYear(yReport,2021);
-                }
+                filesManager.command5();
             } else if (command == 0) {
                 break;
             } else {

@@ -1,4 +1,8 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -6,12 +10,11 @@ import java.util.List;
 public class MonthlyReport {
     HashMap<String, List<String>> monthlyReport  = new HashMap<>();;
 
-    FilesManager filesManager = new FilesManager();
 
     HashMap<String, List<String>> readMonthlyReport(int monthsCount){
         for (int i = 1; i<monthsCount+1; i++){
             String filesName = ("resources/m.20210"+i+".csv");
-            List<String> data = filesManager.readFileContents(filesName);
+            List<String> data = readFileContents(filesName);
             monthlyReport.put("0" +Integer.toString(i), data);
         }
         return monthlyReport;
@@ -35,25 +38,29 @@ public class MonthlyReport {
         return sumList;
         }
     void monthVsYearReport(HashMap<String, List<String>> yReport, HashMap<String, List<Integer>> sumPerMonth){
-        List<String> expenses = yReport.get("2021");
-        int marker = 0;
-        for(int i = 1; i<expenses.size(); i++){
-            String[] lineContent = expenses.get(i).split(",");
-            List<Integer> sumList = sumPerMonth.get(lineContent[0]);
-            if (lineContent[2].equals("true")){
-                if (Integer.parseInt(lineContent[1])!= sumList.get(0)){
-                    marker = 1;
-                    System.out.println("Обнаружено неоответствие расход за "+monthsName(lineContent[0])+" месяц");
-                }
-            } else{
-                if (Integer.parseInt(lineContent[1])!= sumList.get(1)){
-                    marker = 1;
-                    System.out.println("Обнаружено неоответствие доходов за "+monthsName(lineContent[0])+" месяц");
+        if (yReport!=null) {
+            List<String> expenses = yReport.get("2021");
+            int marker = 0;
+            for (int i = 1; i < expenses.size(); i++) {
+                String[] lineContent = expenses.get(i).split(",");
+                List<Integer> sumList = sumPerMonth.get(lineContent[0]);
+                if (lineContent[2].equals("true")) {
+                    if (Integer.parseInt(lineContent[1]) != sumList.get(0)) {
+                        marker = 1;
+                        System.out.println("Обнаружено неоответствие расход за " + monthsName(lineContent[0]) + " месяц");
+                    }
+                } else {
+                    if (Integer.parseInt(lineContent[1]) != sumList.get(1)) {
+                        marker = 1;
+                        System.out.println("Обнаружено неоответствие доходов за " + monthsName(lineContent[0]) + " месяц");
+                    }
                 }
             }
-        }
-        if (marker == 0) {
-            System.out.println("Сверка отчетов завершена. Ошибок не обнаружено.");
+            if (marker == 0) {
+                System.out.println("Сверка отчетов завершена. Ошибок не обнаружено.");
+            }
+        } else {
+            System.out.println("Годовой отчет отсуствует");
         }
     }
     String monthsName(String monthNumber){
@@ -96,6 +103,14 @@ public class MonthlyReport {
             count++;
         }
 
+    }
+    List<String> readFileContents(String path) {
+        try {
+            return Files.readAllLines(Path.of(path));
+        } catch (IOException e) {
+            System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно файл не находится в нужной директории.");
+            return Collections.emptyList();
+        }
     }
 
     }

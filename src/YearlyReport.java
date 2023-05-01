@@ -1,19 +1,18 @@
 import javax.sound.midi.Soundbank;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 
 public class YearlyReport {
     HashMap<String, List<String>> yearlyReport  = new HashMap<>();;
     MonthlyReport monthlyReport = new MonthlyReport();
 
-    FilesManager filesManager = new FilesManager();
 
     HashMap<String, List<String>> readYearlyReport(int year){
             String filesName = ("resources/y."+String.valueOf(year)+".csv");
             System.out.println(filesName);
-            List<String> data = filesManager.readFileContents(filesName);
+            List<String> data = readFileContents(filesName);
             yearlyReport.put(String.valueOf(year), data);
         return yearlyReport;
     }
@@ -59,5 +58,13 @@ public class YearlyReport {
             expenseM += integer;
         }
         System.out.println("Среднемесячный расход - "+expenseM/expensesMonth.size());
+    }
+    List<String> readFileContents(String path) {
+        try {
+            return Files.readAllLines(Path.of(path));
+        } catch (IOException e) {
+            System.out.println("Невозможно прочитать файл с месячным отчётом. Возможно файл не находится в нужной директории.");
+            return Collections.emptyList();
+        }
     }
 }
